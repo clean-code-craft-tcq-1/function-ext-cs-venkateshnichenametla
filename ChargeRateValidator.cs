@@ -19,11 +19,17 @@
 
         //Pure function
         public ToleranceLevel GetToleranceLevel(BatteryManager batteryManager) {
-            if (batteryManager.ChargeRate < lowToleranceValue)
+            if (IsChargeRateAtLowTolerance(batteryManager.ChargeRate))
                 return ToleranceLevel.ApproachingDischarnge;
-            else if (batteryManager.ChargeRate > highToleranceValue)
+            else if (IsChargeRateAtHighTolerance(batteryManager.ChargeRate))
                 return ToleranceLevel.ApproachingPeak;
             return ToleranceLevel.Normal;
+        }
+        private bool IsChargeRateAtLowTolerance(float currentStateOfCharnge) {
+            return currentStateOfCharnge > chargeRateMinimum && currentStateOfCharnge < lowToleranceValue;
+        }
+        private bool IsChargeRateAtHighTolerance(float currentStateOfCharnge) {
+            return currentStateOfCharnge < chargeRateMaximum && currentStateOfCharnge > highToleranceValue;
         }
     }
 }

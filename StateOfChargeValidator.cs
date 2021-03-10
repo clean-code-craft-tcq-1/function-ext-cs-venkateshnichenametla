@@ -18,11 +18,17 @@
         }
         //Pure function
         public ToleranceLevel GetToleranceLevel(BatteryManager batteryManager) {
-            if (batteryManager.StateOfCharge < lowToleranceValue)
+            if (IsStateOfChargeAtLowTolerance(batteryManager.StateOfCharge))
                 return ToleranceLevel.ApproachingDischarnge;
-            else if (batteryManager.StateOfCharge > highToleranceValue)
+            else if (IsStateOfChargeAtHighTolerance(batteryManager.StateOfCharge))
                 return ToleranceLevel.ApproachingPeak;
             return ToleranceLevel.Normal;
+        }
+        private bool IsStateOfChargeAtLowTolerance(float currentStateOfCharnge) {
+            return currentStateOfCharnge > stateOfChargeMinimum && currentStateOfCharnge < lowToleranceValue;
+        }
+        private bool IsStateOfChargeAtHighTolerance(float currentStateOfCharnge) {
+            return currentStateOfCharnge < stateOfChargeMaximum && currentStateOfCharnge > highToleranceValue;
         }
     }
 }

@@ -18,11 +18,17 @@
         }
         //Pure function
         public ToleranceLevel GetToleranceLevel(BatteryManager batteryManager) {
-            if (batteryManager.Temperature > temperatureMinimum && batteryManager.Temperature < lowToleranceValue)
+            if (IsTemperatureAtLowTolerance(batteryManager.Temperature))
                 return ToleranceLevel.ApproachingDischarnge;
-            else if (batteryManager.Temperature < temperatureMaximum && batteryManager.Temperature > highToleranceValue)
+            else if (IsTemperatureAtHighTolerance(batteryManager.Temperature))
                 return ToleranceLevel.ApproachingPeak;
             return ToleranceLevel.Normal;
+        }
+        private bool IsTemperatureAtLowTolerance(float currentTemperature) {
+            return currentTemperature > temperatureMinimum && currentTemperature < lowToleranceValue;
+        }
+        private bool IsTemperatureAtHighTolerance(float currentTemperature) {
+            return currentTemperature < temperatureMaximum && currentTemperature > highToleranceValue;
         }
     }
 }
