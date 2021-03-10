@@ -13,34 +13,41 @@ namespace BatteryManagementSystem {
         private static CultureInfo cultureInfo;
         private static ResourceManager resourceManager = null;
         public static bool IsBatteryConditionOk(BatteryManager batteryManager) {
-            TemperatureValidator temperatureValidator = new TemperatureValidator();
-            StateOfChargeValidator stateOfChargeValidator = new StateOfChargeValidator();
-            ChargeRateValidator chargeRateValidator = new ChargeRateValidator();
-            if (!temperatureValidator.IsValid(batteryManager)) {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.TemperatueOutOfRange));
-                return false;
+            if (IsTemperatureValid(batteryManager) && IsStateOfChargeValid(batteryManager) && IsChargeRateValid(batteryManager))
+            {
+                return true;
             }
-            if (!stateOfChargeValidator.IsValid(batteryManager)) {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.StateOfChargeOutOfRange));
-                return false;
-            }
-            if (!chargeRateValidator.IsValid(batteryManager)) {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.ChargeRateOutOfRange));
-                return false;
-            }
-            return true;
+            return false;
+        }
+        public static bool IsTemperatureValid(BatteryManager batteryManager)
+        {
+            bool isValid = new TemperatureValidator().IsValid(batteryManager);
+            DisplayMessageFromResourceFile(nameof(ResourceEnglish.TemperatueOutOfRange));
+            return isValid;
+        }
+        public static bool IsStateOfChargeValid(BatteryManager batteryManager)
+        {
+            bool isValid = new StateOfChargeValidator().IsValid(batteryManager);
+            DisplayMessageFromResourceFile(nameof(ResourceEnglish.StateOfChargeOutOfRange));
+            return isValid;
+        }
+        public static bool IsChargeRateValid(BatteryManager batteryManager)
+        {
+            bool isValid = new ChargeRateValidator().IsValid(batteryManager);
+            DisplayMessageFromResourceFile(nameof(ResourceEnglish.ChargeRateOutOfRange));
+            return isValid;
         }
         private static void DisplayMessageFromResourceFile(string resourceKey) {
-            if (resourceManager == null) {
-                if (Language.Equals("German"))
-                    resourceManager = new ResourceManager("BatteryManagementSystem.ResourceDutch", typeof(ResourceDutch).Assembly);
-                else
-                    resourceManager = new ResourceManager("BatteryManagementSystem.ResourceEnglish", typeof(ResourceEnglish).Assembly);
-            }
             if (Language.Equals("German"))
+            {
+                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceDutch", typeof(ResourceDutch).Assembly);
                 cultureInfo = CultureInfo.CreateSpecificCulture("de");
+            }
             else
+            {
+                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceEnglish", typeof(ResourceEnglish).Assembly);
                 cultureInfo = CultureInfo.CreateSpecificCulture("en");
+            }
             Console.WriteLine(resourceManager.GetString(resourceKey, cultureInfo));
         }
         public static BreachLevel GetTemperatureBreachLevel(BatteryManager batteryManager) {
