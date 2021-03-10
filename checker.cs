@@ -16,20 +16,17 @@ namespace BatteryManagementSystem {
             TemperatureValidator temperatureValidator = new TemperatureValidator();
             StateOfChargeValidator stateOfChargeValidator = new StateOfChargeValidator();
             ChargeRateValidator chargeRateValidator = new ChargeRateValidator();
-            bool isValid = temperatureValidator.IsValid(batteryManager);
-            if (!isValid) {
+            if (!temperatureValidator.IsValid(batteryManager)) {
                 DisplayMessageFromResourceFile(nameof(ResourceEnglish.TemperatueOutOfRange));
-                return isValid;
+                return false;
             }
-            isValid = stateOfChargeValidator.IsValid(batteryManager);
-            if (!isValid) {
+            if (!stateOfChargeValidator.IsValid(batteryManager)) {
                 DisplayMessageFromResourceFile(nameof(ResourceEnglish.StateOfChargeOutOfRange));
-                return isValid;
+                return false;
             }
-            isValid = chargeRateValidator.IsValid(batteryManager);
-            if (!isValid) {
+            if (!chargeRateValidator.IsValid(batteryManager)) {
                 DisplayMessageFromResourceFile(nameof(ResourceEnglish.ChargeRateOutOfRange));
-                return isValid;
+                return false;
             }
             return isValid;
         }
