@@ -28,7 +28,7 @@ namespace BatteryManagementSystem {
                 DisplayMessageFromResourceFile(nameof(ResourceEnglish.ChargeRateOutOfRange));
                 return false;
             }
-            return isValid;
+            return true;
         }
         private static void DisplayMessageFromResourceFile(string resourceKey) {
             if (resourceManager == null) {
