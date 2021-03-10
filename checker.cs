@@ -13,11 +13,7 @@ namespace BatteryManagementSystem {
         private static CultureInfo cultureInfo;
         private static ResourceManager resourceManager = null;
         public static bool IsBatteryConditionOk(BatteryManager batteryManager) {
-            if (IsTemperatureValid(batteryManager) && IsStateOfChargeValid(batteryManager) && IsChargeRateValid(batteryManager))
-            {
-                return true;
-            }
-            return false;
+            return IsTemperatureValid(batteryManager) && IsStateOfChargeValid(batteryManager) && IsChargeRateValid(batteryManager);
         }
         public static bool IsTemperatureValid(BatteryManager batteryManager)
         {
