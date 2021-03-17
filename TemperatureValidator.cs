@@ -1,26 +1,30 @@
 ﻿namespace BatteryManagementSystem {
-    public class TemperatureValidator : IValidator<BatteryManager> {
+    public class TemperatureValidator
+    {
         private static readonly float temperatureMinimum = 0;
         private static readonly float temperatureMaximum = 45;
         static readonly float lowToleranceValue = (float)(temperatureMinimum + (temperatureMaximum * 0.05));
         static readonly float highToleranceValue = (float)(temperatureMaximum - (temperatureMaximum * 0.05));
         //Pure function
-        public bool IsValid(BatteryManager batteryManager) {
-            return !(batteryManager.Temperature < temperatureMinimum || batteryManager.Temperature > temperatureMaximum);
+        public bool IsValid(float temperature) 
+        {
+            return ((temperature > temperatureMinimum) && (temperature < temperatureMaximum));
         }
         //Pure function
-        public BreachLevel GetBreachLevel(BatteryManager batteryManager) {
-            if (batteryManager.Temperature < temperatureMinimum)
+        public BreachLevel GetBreachLevel(float temperature) 
+        {
+            if (temperature < temperatureMinimum)
                 return BreachLevel.Low;
-            else if (batteryManager.Temperature > temperatureMaximum)
+            else if (temperature > temperatureMaximum)
                 return BreachLevel.High;
             return BreachLevel.Normal;
         }
         //Pure function
-        public ToleranceLevel GetToleranceLevel(BatteryManager batteryManager) {
-            if (IsTemperatureAtLowTolerance(batteryManager.Temperature))
+        public ToleranceLevel GetToleranceLevel(float temperature) 
+        {
+            if (IsTemperatureAtLowTolerance(temperature))
                 return ToleranceLevel.ApproachingDischarnge;
-            else if (IsTemperatureAtHighTolerance(batteryManager.Temperature))
+            else if (IsTemperatureAtHighTolerance(temperature))
                 return ToleranceLevel.ApproachingPeak;
             return ToleranceLevel.Normal;
         }
