@@ -20,13 +20,12 @@ namespace BatteryManagementSystem
             Debug.Assert(!batteryManager.IsBatteryBreached(15, 50, 0.7f));
             Debug.Assert(batteryManager.IsBatteryBreached(15, 65, 0.2f));
             Debug.Assert(!batteryManager.IsBatteryBreached(15, 65, 0.7f));
-            Debug.Assert(batteryManager.IsToleranceLevelVoilated(2, 65, 0.7f));
-            Debug.Assert(!batteryManager.IsToleranceLevelVoilated(15, 65, 0.7f));
-            Debug.Assert(batteryManager.IsToleranceLevelVoilated(15, 21, 0.7f));
-            Debug.Assert(!batteryManager.IsToleranceLevelVoilated(15, 50, 0.7f));
-            Debug.Assert(batteryManager.IsToleranceLevelVoilated(15, 65, 0.33f));
-            Debug.Assert(!batteryManager.IsToleranceLevelVoilated(15, 65, 0.7f));
-
+            Debug.Assert(batteryManager.IsBatteryToleranceVoildated(2, 65, 0.7f));
+            Debug.Assert(!batteryManager.IsBatteryToleranceVoildated(15, 65, 0.7f));
+            Debug.Assert(batteryManager.IsBatteryToleranceVoildated(15, 21, 0.7f));
+            Debug.Assert(!batteryManager.IsBatteryToleranceVoildated(15, 50, 0.7f));
+            Debug.Assert(batteryManager.IsBatteryToleranceVoildated(15, 65, 0.33f));
+            Debug.Assert(!batteryManager.IsBatteryToleranceVoildated(15, 65, 0.7f));
             Console.WriteLine("All ok");
             return 0;
         }

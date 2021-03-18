@@ -22,8 +22,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="checker.cs" />
+	<Compile Include="BatteryFactors.cs" />
     <Compile Include="BatteryManager.cs" />
-    <Compile Include="ChargeRateValidator.cs" />
     <Compile Include="ConsoleReporter.cs" />
     <Compile Include="IReporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -37,8 +37,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ResourceEnglish.resx</DependentUpon>
     </Compile>
-    <Compile Include="StateOfChargeValidator.cs" />
-    <Compile Include="TemperatureValidator.cs" />
     <Compile Include="TextFileReporter.cs" />
   </ItemGroup>
   <ItemGroup>

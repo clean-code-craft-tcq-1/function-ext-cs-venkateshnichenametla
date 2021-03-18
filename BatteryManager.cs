@@ -14,6 +14,16 @@ namespace BatteryManagementSystem
                 throw new InvalidProgramException("Invalid program!!");
             }
             reporter = reporterDependency;
+            if (Language.Equals("German"))
+            {
+                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceDutch", typeof(ResourceDutch).Assembly);
+                cultureInfo = CultureInfo.CreateSpecificCulture("de");
+            }
+            else
+            {
+                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceEnglish", typeof(ResourceEnglish).Assembly);
+                cultureInfo = CultureInfo.CreateSpecificCulture("en");
+            }
         }
 
         private static string language = "English";
@@ -26,115 +36,99 @@ namespace BatteryManagementSystem
         private static ResourceManager resourceManager = null;
         public bool IsBatteryConditionOk(float temperature, float stateOfCharge, float chargeRate)
         {
-            return IsTemperatureValid(temperature) && IsStateOfChargeValid(stateOfCharge) && IsChargeRateValid(chargeRate);
-        }
-        public bool IsTemperatureValid(float temperature)
-        {
-            bool isValid = new TemperatureValidator().IsValid(temperature);
-            DisplayMessageFromResourceFile(nameof(ResourceEnglish.TemperatueOutOfRange));
-            return isValid;
-        }
-        public bool IsStateOfChargeValid(float stateOfCharge)
-        {
-            bool isValid = new StateOfChargeValidator().IsValid(stateOfCharge);
-            DisplayMessageFromResourceFile(nameof(ResourceEnglish.StateOfChargeOutOfRange));
-            return isValid;
-        }
-        public bool IsChargeRateValid(float chargeRate)
-        {
-            bool isValid = new ChargeRateValidator().IsValid(chargeRate);
-            DisplayMessageFromResourceFile(nameof(ResourceEnglish.ChargeRateOutOfRange));
-            return isValid;
+            return IsBatteryFactorValid(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMinimum, BatteryFactors.TemperatureMaximum)
+                && IsBatteryFactorValid(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMinimum, BatteryFactors.StateOfChargeMaximum)
+                && IsBatteryFactorValid(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMinimum, BatteryFactors.ChargeRateMaximum);
         }
 
         public bool IsBatteryBreached(float temperature, float stateOfCharge, float chargeRate)
         {
-            return IsTemperatureLevelBreached(temperature) || IsStateOfChargeLevelBreached(stateOfCharge) || IsChargeRateLevelBreached(chargeRate);
-        }
-        private void DisplayMessageFromResourceFile(string resourceKey)
-        {
-            if (Language.Equals("German"))
-            {
-                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceDutch", typeof(ResourceDutch).Assembly);
-                cultureInfo = CultureInfo.CreateSpecificCulture("de");
-            }
-            else
-            {
-                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceEnglish", typeof(ResourceEnglish).Assembly);
-                cultureInfo = CultureInfo.CreateSpecificCulture("en");
-            }
-            reporter.Report(resourceManager.GetString(resourceKey, cultureInfo));
-        }
-        public bool IsTemperatureLevelBreached(float temperature)
-        {
-            TemperatureValidator temperatureValidator = new TemperatureValidator();
-            BreachLevel breachLevel = temperatureValidator.GetBreachLevel(temperature);
-            if (breachLevel != BreachLevel.Normal)
-            {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.TemperatureBreachHigh));
-                return true;
-            }
-            return false;
-        }
-        public bool IsChargeRateLevelBreached(float chargeRate)
-        {
-            ChargeRateValidator chargeRateValidator = new ChargeRateValidator();
-            BreachLevel breachLevel = chargeRateValidator.GetBreachLevel(chargeRate);
-            if (breachLevel != BreachLevel.Normal)
-            {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.ChargeRateBreachLow));
-                return true;
-            }
-            return false;
-        }
-        public bool IsStateOfChargeLevelBreached(float stateOfCharge)
-        {
-            StateOfChargeValidator stateOfChargeValidator = new StateOfChargeValidator();
-            BreachLevel breachLevel = stateOfChargeValidator.GetBreachLevel(stateOfCharge);
-            if (breachLevel != BreachLevel.Normal)
-                return true;
-            return false;
+            return IsBatteryLowBreached( temperature, stateOfCharge, chargeRate) 
+                || IsBatteryHighBreached(temperature, stateOfCharge, chargeRate);
         }
 
-        public bool IsToleranceLevelVoilated(float temperature, float stateOfCharge, float chargeRate)
+        private bool IsBatteryLowBreached(float temperature, float stateOfCharge, float chargeRate)
         {
-            return IsTemperatureToleranceVoilated(temperature) || IsStateOfChargeToleranceVoilated(stateOfCharge) || IsChargeRateToleranceVoilated(chargeRate);
+            return IsLowBreach(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMinimum) ||
+                   IsLowBreach(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMinimum) ||
+                   IsLowBreach(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMinimum);
         }
-        public bool IsTemperatureToleranceVoilated(float temperature)
+
+        private bool IsBatteryHighBreached(float temperature, float stateOfCharge, float chargeRate)
         {
-            TemperatureValidator temperatureValidator = new TemperatureValidator();
-            ToleranceLevel toleranceLevel = temperatureValidator.GetToleranceLevel(temperature);
-            if (toleranceLevel != ToleranceLevel.Normal)
+            return IsHighBreach(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMaximum) ||
+                   IsHighBreach(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMaximum) ||
+                   IsHighBreach(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMaximum);
+        }
+
+        public bool IsBatteryToleranceVoildated(float temperature, float stateOfCharge, float chargeRate)
+        {
+            return IsBatteryApproachingDischarge(temperature, stateOfCharge, chargeRate) || IsBatteryApproachingPeak(temperature, stateOfCharge, chargeRate);
+        }
+
+        private bool IsBatteryApproachingDischarge(float temperature, float stateOfCharge, float chargeRate)
+        {
+            return IsApproachingDischarge(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMinimum, BatteryFactors.TemperatureLowTolerance) ||
+                   IsApproachingDischarge(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMinimum, BatteryFactors.StateOfChargeLowTolerance) ||
+                   IsApproachingDischarge(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMinimum, BatteryFactors.ChargeRateLowTolerance);
+        }
+
+        private bool IsBatteryApproachingPeak(float temperature, float stateOfCharge, float chargeRate)
+        {
+            return IsApproachingPeak(BatteryFactors.Temperature,temperature, BatteryFactors.TemperatureMaximum, BatteryFactors.TemperatureHighTolerance) ||
+                   IsApproachingPeak(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMaximum, BatteryFactors.StateOfChargeHighTolerance) ||
+                   IsApproachingPeak(BatteryFactors.ChargeRate,chargeRate, BatteryFactors.ChargeRateMaximum, BatteryFactors.ChargeRateHighTolerance);
+        }
+        private void LogMessage(string message)
+        {
+            reporter.Report(message);
+        }
+        public bool IsBatteryFactorValid(string factorType,float currentValue, float mininumValue, float maximumValue)
+        {
+            if ((currentValue > mininumValue) && (currentValue < maximumValue))
             {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.TemperatureToleranceHigh));
+                LogMessage(factorType + "is not valid!");
                 return true;
             }
             return false;
         }
-        public bool IsChargeRateToleranceVoilated(float chargeRate)
+        public bool IsLowBreach(string factorType, float currentValue,float lowBreachValue )
         {
-            ChargeRateValidator chargeRateValidator = new ChargeRateValidator();
-            ToleranceLevel toleranceLevel = chargeRateValidator.GetToleranceLevel(chargeRate);
-            if (toleranceLevel != ToleranceLevel.Normal)
+            if (currentValue < lowBreachValue)
             {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.ChargeRateToleranceHigh));
+                LogMessage(factorType + " is low breach");
                 return true;
             }
             return false;
         }
-        public bool IsStateOfChargeToleranceVoilated(float stateOfCharge)
+        public bool IsHighBreach(string factorType, float currentValue, float highBreachValue)
         {
-            StateOfChargeValidator stateOfChargeValidator = new StateOfChargeValidator();
-            ToleranceLevel toleranceLevel = stateOfChargeValidator.GetToleranceLevel(stateOfCharge);
-            if (toleranceLevel != ToleranceLevel.Normal)
+            if (currentValue > highBreachValue)
             {
-                DisplayMessageFromResourceFile(nameof(ResourceEnglish.StateOfChargeToleranceLow));
+                LogMessage(factorType + " is high breach");
+                return true;
+            }
+            return false;
+        }
+        public bool IsApproachingDischarge(string factorType, float currentValue, float minimumValue, float lowToleranceValue)
+        {
+            if(currentValue > minimumValue && currentValue < lowToleranceValue)
+            {
+                LogMessage("Warning!!" + factorType + " Approaching discharge");
+                return true;
+            }
+            return false;
+        }
+        public bool IsApproachingPeak(string factorType,float currentValue,float maximumValue , float highToleranceValue)
+        {
+            if(currentValue < maximumValue && currentValue > highToleranceValue)
+            {
+                LogMessage("Warning!!" + factorType + " Approaching peak");
                 return true;
             }
             return false;
         }
     }
-
     public enum BreachLevel
     {
         Low,
