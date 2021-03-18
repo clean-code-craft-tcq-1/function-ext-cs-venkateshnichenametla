@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Resources;
 namespace BatteryManagementSystem 
 {
@@ -8,6 +9,10 @@ namespace BatteryManagementSystem
 
         public BatteryManager(IReporter reporterDependency)
         {
+            if(reporterDependency == null)
+            {
+                throw new InvalidProgramException("Invalid program!!");
+            }
             reporter = reporterDependency;
         }
 
