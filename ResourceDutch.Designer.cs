@@ -9,6 +9,9 @@
 //------------------------------------------------------------------------------
 
 namespace BatteryManagementSystem {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -58,6 +61,24 @@ namespace BatteryManagementSystem {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warnung! Annäherung an die Entladung.
+        /// </summary>
+        internal static string ApproachingDischarge {
+            get {
+                return ResourceManager.GetString("ApproachingDischarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warnung! Annäherung an den Gipfel.
+        /// </summary>
+        internal static string ApproachingPeak {
+            get {
+                return ResourceManager.GetString("ApproachingPeak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ladungsbruch - hoch.
         /// </summary>
         internal static string ChargeRateBreachHigh {
@@ -99,6 +120,33 @@ namespace BatteryManagementSystem {
         internal static string ChargeRateToleranceLow {
             get {
                 return ResourceManager.GetString("ChargeRateToleranceLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ist hohe Verletzung!.
+        /// </summary>
+        internal static string IsHighBreach {
+            get {
+                return ResourceManager.GetString("IsHighBreach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ist niedrige Verletzung!.
+        /// </summary>
+        internal static string IsLowBreach {
+            get {
+                return ResourceManager.GetString("IsLowBreach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ist ungültig!.
+        /// </summary>
+        internal static string IsNotValid {
+            get {
+                return ResourceManager.GetString("IsNotValid", resourceCulture);
             }
         }
         

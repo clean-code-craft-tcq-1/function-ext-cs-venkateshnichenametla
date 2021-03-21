@@ -1,11 +1,15 @@
 ﻿using System.IO;
+using System.Collections.Generic;
 namespace BatteryManagementSystem
 {
     class TextFileReporter : IReporter
     {
-        public void Report(string message)
+        public void Report(List<string> messages)
         {
-            File.WriteAllText(Path.GetTempPath(), message);
+            string filePath = Path.Combine(Path.GetTempPath(), "BatteryReporter.txt");
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+            File.AppendAllLines(filePath, messages);
         }
     }
 }

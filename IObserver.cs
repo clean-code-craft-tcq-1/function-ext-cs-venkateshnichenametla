@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 namespace BatteryManagementSystem
 {
-    public interface IReporter
+    public interface IObserver
     {
-        void Report(List<string> messages);
+        void Update(List<string> report);
     }
 }

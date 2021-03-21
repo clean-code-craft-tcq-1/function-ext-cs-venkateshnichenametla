@@ -1,132 +1,111 @@
-﻿using System;
-using System.Globalization;
-using System.Resources;
-namespace BatteryManagementSystem 
+﻿using System.Collections.Generic;
+namespace BatteryManagementSystem
 {
-    public class BatteryManager 
+    public class BatteryManager : ISubject
     {
-        IReporter reporter;
-
-        public BatteryManager(IReporter reporterDependency)
+        List<IObserver> observers;
+        public BatteryManager()
         {
-            if(reporterDependency == null)
-            {
-                throw new InvalidProgramException("Invalid program!!");
-            }
-            reporter = reporterDependency;
-            if (Language.Equals("German"))
-            {
-                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceDutch", typeof(ResourceDutch).Assembly);
-                cultureInfo = CultureInfo.CreateSpecificCulture("de");
-            }
-            else
-            {
-                resourceManager = new ResourceManager("BatteryManagementSystem.ResourceEnglish", typeof(ResourceEnglish).Assembly);
-                cultureInfo = CultureInfo.CreateSpecificCulture("en");
-            }
+            observers = new List<IObserver>();
+            Messages = new List<string>();
         }
-
-        private static string language = "English";
-        public static string Language
-        {
-            get { return language; }
-            set { language = value; }
-        }
-        private static CultureInfo cultureInfo;
-        private static ResourceManager resourceManager = null;
+        public List<string> Messages { get; set; }
         public bool IsBatteryConditionOk(float temperature, float stateOfCharge, float chargeRate)
         {
             return IsBatteryFactorValid(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMinimum, BatteryFactors.TemperatureMaximum)
                 && IsBatteryFactorValid(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMinimum, BatteryFactors.StateOfChargeMaximum)
                 && IsBatteryFactorValid(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMinimum, BatteryFactors.ChargeRateMaximum);
         }
-
         public bool IsBatteryBreached(float temperature, float stateOfCharge, float chargeRate)
         {
-            return IsBatteryLowBreached( temperature, stateOfCharge, chargeRate) 
+            return IsBatteryLowBreached(temperature, stateOfCharge, chargeRate)
                 || IsBatteryHighBreached(temperature, stateOfCharge, chargeRate);
         }
-
         private bool IsBatteryLowBreached(float temperature, float stateOfCharge, float chargeRate)
         {
             return IsLowBreach(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMinimum) ||
                    IsLowBreach(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMinimum) ||
                    IsLowBreach(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMinimum);
         }
-
         private bool IsBatteryHighBreached(float temperature, float stateOfCharge, float chargeRate)
         {
             return IsHighBreach(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMaximum) ||
                    IsHighBreach(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMaximum) ||
                    IsHighBreach(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMaximum);
         }
-
         public bool IsBatteryToleranceVoildated(float temperature, float stateOfCharge, float chargeRate)
         {
             return IsBatteryApproachingDischarge(temperature, stateOfCharge, chargeRate) || IsBatteryApproachingPeak(temperature, stateOfCharge, chargeRate);
         }
-
         private bool IsBatteryApproachingDischarge(float temperature, float stateOfCharge, float chargeRate)
         {
             return IsApproachingDischarge(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMinimum, BatteryFactors.TemperatureLowTolerance) ||
                    IsApproachingDischarge(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMinimum, BatteryFactors.StateOfChargeLowTolerance) ||
                    IsApproachingDischarge(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMinimum, BatteryFactors.ChargeRateLowTolerance);
         }
-
         private bool IsBatteryApproachingPeak(float temperature, float stateOfCharge, float chargeRate)
         {
-            return IsApproachingPeak(BatteryFactors.Temperature,temperature, BatteryFactors.TemperatureMaximum, BatteryFactors.TemperatureHighTolerance) ||
+            return IsApproachingPeak(BatteryFactors.Temperature, temperature, BatteryFactors.TemperatureMaximum, BatteryFactors.TemperatureHighTolerance) ||
                    IsApproachingPeak(BatteryFactors.StateOfCharge, stateOfCharge, BatteryFactors.StateOfChargeMaximum, BatteryFactors.StateOfChargeHighTolerance) ||
-                   IsApproachingPeak(BatteryFactors.ChargeRate,chargeRate, BatteryFactors.ChargeRateMaximum, BatteryFactors.ChargeRateHighTolerance);
+                   IsApproachingPeak(BatteryFactors.ChargeRate, chargeRate, BatteryFactors.ChargeRateMaximum, BatteryFactors.ChargeRateHighTolerance);
         }
-        private void LogMessage(string message)
-        {
-            reporter.Report(message);
-        }
-        public bool IsBatteryFactorValid(string factorType,float currentValue, float mininumValue, float maximumValue)
+        public bool IsBatteryFactorValid(string factorType, float currentValue, float mininumValue, float maximumValue)
         {
             if ((currentValue > mininumValue) && (currentValue < maximumValue))
-            {
-                LogMessage(factorType + "is not valid!");
                 return true;
-            }
+            string message = GetMessageFromResourceKey(nameof(ResourceEnglish.IsNotValid));
+            LogMessage(factorType + " " + message);
             return false;
         }
-        public bool IsLowBreach(string factorType, float currentValue,float lowBreachValue )
+        public bool IsLowBreach(string factorType, float currentValue, float lowBreachValue)
         {
             if (currentValue < lowBreachValue)
-            {
-                LogMessage(factorType + " is low breach");
                 return true;
-            }
+            string message = GetMessageFromResourceKey(nameof(ResourceEnglish.IsLowBreach));
+            LogMessage(factorType + " " + message);
             return false;
         }
         public bool IsHighBreach(string factorType, float currentValue, float highBreachValue)
         {
             if (currentValue > highBreachValue)
-            {
-                LogMessage(factorType + " is high breach");
                 return true;
-            }
+            string message = GetMessageFromResourceKey(nameof(ResourceEnglish.IsHighBreach));
+            LogMessage(factorType + " " + message);
             return false;
         }
         public bool IsApproachingDischarge(string factorType, float currentValue, float minimumValue, float lowToleranceValue)
         {
-            if(currentValue > minimumValue && currentValue < lowToleranceValue)
-            {
-                LogMessage("Warning!!" + factorType + " Approaching discharge");
+            if (currentValue > minimumValue && currentValue < lowToleranceValue)
                 return true;
-            }
+            string message = GetMessageFromResourceKey(nameof(ResourceEnglish.ApproachingDischarge));
+            LogMessage(message + " - " + factorType);
             return false;
         }
-        public bool IsApproachingPeak(string factorType,float currentValue,float maximumValue , float highToleranceValue)
+        public bool IsApproachingPeak(string factorType, float currentValue, float maximumValue, float highToleranceValue)
         {
-            if(currentValue < maximumValue && currentValue > highToleranceValue)
-            {
-                LogMessage("Warning!!" + factorType + " Approaching peak");
+            if (currentValue < maximumValue && currentValue > highToleranceValue)
                 return true;
-            }
+            string message = GetMessageFromResourceKey(nameof(ResourceEnglish.ApproachingPeak));
+            LogMessage(message + " - " + factorType);
             return false;
+        }
+        private string GetMessageFromResourceKey(string resourceKey)
+        {
+            return ResourceManagerHelper.GetResourceManager().GetString(resourceKey);
+        }
+        private void LogMessage(string message)
+        {
+            if (!Messages.Contains(message))
+                Messages.Add(message);
+            Notify();
+        }
+        public void Register(IObserver observer)
+        {
+            observers.Add(observer);
+        }
+        public void Notify()
+        {
+            observers.ForEach(observe => { observe.Update(Messages); });
         }
     }
     public enum BreachLevel

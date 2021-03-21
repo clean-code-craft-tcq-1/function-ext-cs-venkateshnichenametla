@@ -61,6 +61,24 @@ namespace BatteryManagementSystem {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warning! Approaching Discharge.
+        /// </summary>
+        internal static string ApproachingDischarge {
+            get {
+                return ResourceManager.GetString("ApproachingDischarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning! Approaching Peak.
+        /// </summary>
+        internal static string ApproachingPeak {
+            get {
+                return ResourceManager.GetString("ApproachingPeak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Breach in Charge Rate - High.
         /// </summary>
         internal static string ChargeRateBreachHigh {
@@ -102,6 +120,33 @@ namespace BatteryManagementSystem {
         internal static string ChargeRateToleranceLow {
             get {
                 return ResourceManager.GetString("ChargeRateToleranceLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to is high breach!.
+        /// </summary>
+        internal static string IsHighBreach {
+            get {
+                return ResourceManager.GetString("IsHighBreach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to is low breach!.
+        /// </summary>
+        internal static string IsLowBreach {
+            get {
+                return ResourceManager.GetString("IsLowBreach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to is not valid!.
+        /// </summary>
+        internal static string IsNotValid {
+            get {
+                return ResourceManager.GetString("IsNotValid", resourceCulture);
             }
         }
         

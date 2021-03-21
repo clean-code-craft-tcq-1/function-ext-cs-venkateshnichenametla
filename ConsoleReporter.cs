@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace BatteryManagementSystem
 {
     public class ConsoleReporter : IReporter
     {
-        public void Report(string message)
+        public void Report(List<string> messages)
         {
-            Console.WriteLine(message);
+            foreach (string message in messages)
+                Console.WriteLine(message);
         }
     }
 }
